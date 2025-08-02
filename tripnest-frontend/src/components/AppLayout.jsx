@@ -15,61 +15,7 @@ const { Header, Sider, Content, Footer } = Layout;
 const AppLayout = () => {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
-  
-  // Check if we're on the landing page
-  const isLandingPage = location.pathname === "/";
 
-  // If it's the landing page, render without sidebar and wrapper
-  if (isLandingPage) {
-    return (
-      <Layout style={{ minHeight: "100vh" }}>
-        {/* Simple header for landing page */}
-        <Header
-          style={{
-            background: "rgba(0, 0, 0, 0.8)",
-            position: "fixed",
-            top: 0,
-            width: "100%",
-            zIndex: 1000,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            padding: "0 24px",
-          }}
-        >
-          <div style={{ color: "#fff", fontSize: "20px", fontWeight: "bold" }}>
-            ✈️ TravelApp
-          </div>
-          <Menu
-            theme="dark"
-            mode="horizontal"
-            style={{ background: "transparent", border: "none" }}
-            items={[
-              {
-                key: "/explore",
-                label: <Link to="/explore" style={{ color: "#fff" }}>Explore</Link>,
-              },
-              {
-                key: "/bookings",
-                label: <Link to="/bookings" style={{ color: "#fff" }}>My Trips</Link>,
-              },
-            ]}
-          />
-        </Header>
-
-        {/* Full-width content for landing page */}
-        <Content style={{ marginTop: 0, padding: 0 }}>
-          <Outlet />
-        </Content>
-
-        <Footer style={{ textAlign: "center", marginTop: 0 }}>
-          © {new Date().getFullYear()} TravelExplorer. All rights reserved.
-        </Footer>
-      </Layout>
-    );
-  }
-
-  // Regular layout for other pages
   return (
     <Layout style={{ minHeight: "100vh" }}>
       {/* Sidebar */}

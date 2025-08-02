@@ -5,33 +5,33 @@ import { Button, Input, Card, Typography, Row, Col, Tag, Empty } from "antd";
 
 const { Title, Paragraph, Text } = Typography;
 
-const dummyAttractions = [
+const dummyCities = [
   {
     id: "1",
-    name: "Taj Mahal",
+    name: "Agra",
     category: "Historic",
-    image: "https://source.unsplash.com/600x400/?tajmahal",
+    image: "https://source.unsplash.com/600x400/?agra,city",
     rating: 4.8,
-    location: "Agra, India",
-    description: "One of the seven wonders of the world.",
+    location: "Uttar Pradesh, India",
+    description: "Home to the magnificent Taj Mahal and rich Mughal heritage.",
   },
   {
     id: "2",
-    name: "Manali Hills",
+    name: "Manali",
     category: "Nature",
-    image: "https://source.unsplash.com/600x400/?mountains",
+    image: "https://source.unsplash.com/600x400/?manali,city",
     rating: 4.6,
-    location: "Himachal Pradesh",
-    description: "Snow-capped beauty perfect for winter trips.",
+    location: "Himachal Pradesh, India",
+    description: "Beautiful hill station with snow-capped mountains and adventure sports.",
   },
   {
     id: "3",
-    name: "Street Food Delhi",
+    name: "Delhi",
     category: "Food",
-    image: "https://source.unsplash.com/600x400/?streetfood",
+    image: "https://source.unsplash.com/600x400/?delhi,city",
     rating: 4.7,
-    location: "Delhi",
-    description: "Spicy, delicious and authentic Indian food.",
+    location: "Delhi, India",
+    description: "Capital city famous for street food, history, and vibrant culture.",
   },
 ];
 
@@ -41,7 +41,7 @@ const ExplorePage = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchTerm, setSearchTerm] = useState("");
 
-  const filteredAttractions = dummyAttractions.filter((place) => {
+  const filteredAttractions = dummyCities.filter((place) => {
     const matchesCategory = selectedCategory === "All" || place.category === selectedCategory;
     const matchesSearch = place.name.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesCategory && matchesSearch;
