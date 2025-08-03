@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useDispatch } from "react-redux";
 import { 
   Home,
   Plane,
@@ -22,11 +23,18 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import MainSidebar from "./MainSidebar";
+import { logout } from "../store/slices/authSlice";
 
 const Layout = ({ children }) => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate("/login");
+  };
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -48,7 +56,7 @@ const Layout = ({ children }) => {
                 <MapPin className="h-6 w-6" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-blue-600">MakeMyTrip</h1>
+                <h1 className="text-xl font-bold text-blue-600">TripNest</h1>
                 <p className="text-xs text-gray-500">Your Travel Partner</p>
               </div>
             </div>
@@ -79,16 +87,19 @@ const Layout = ({ children }) => {
                 <Bell className="h-5 w-5 text-gray-600" />
                 <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">3</span>
               </button>
-              <button className="hidden md:flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+              <button
+                onClick={handleLogout}
+                className="hidden md:flex items-center space-x-2 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              >
                 <User className="h-4 w-4" />
-                <span>Login</span>
+                <span>Logout</span>
               </button>
             </div>
           </div>
         </header>
 
         {/* Main Content */}
-        <main className="flex-1 overflow-auto p-6">
+        <main className="flex-1 overflow-auto">
           {children || (
             <div className="max-w-4xl mx-auto">
               <h1 className="text-2xl font-bold text-gray-900 mb-4">

@@ -32,12 +32,6 @@ const TravelBooking = () => {
       component: <HotelBooking cities={cities} />
     },
     {
-      key: 'packages',
-      label: 'Packages',
-      icon: <Package className="h-5 w-5" />,
-      component: <HolidayPackages cities={cities} />
-    },
-    {
       key: 'buses',
       label: 'Buses',
       icon: <Bus className="h-5 w-5" />,
@@ -48,6 +42,12 @@ const TravelBooking = () => {
       label: 'Trains',
       icon: <Train className="h-5 w-5" />,
       component: <TrainBooking cities={cities} />
+    },
+    {
+      key: 'packages',
+      label: 'Packages',
+      icon: <Package className="h-5 w-5" />,
+      component: <HolidayPackages cities={cities} />
     }
   ];
 

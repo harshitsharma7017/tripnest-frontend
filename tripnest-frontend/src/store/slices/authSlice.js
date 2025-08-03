@@ -9,6 +9,7 @@ export const loginUser = createAsyncThunk(
       const res = await API.login(credentials);
       const { token, user } = res.data;
       localStorage.setItem('token', token);
+      
       return { user, token };
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || 'Login failed');
@@ -47,6 +48,8 @@ const authSlice = createSlice({
       state.user = null;
       state.token = null;
       localStorage.removeItem('token');
+      localStorage.removeItem("user");
+      localStorage.removeItem("access_token");
     },
   },
   extraReducers: (builder) => {

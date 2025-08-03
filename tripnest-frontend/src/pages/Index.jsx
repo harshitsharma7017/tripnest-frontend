@@ -21,7 +21,7 @@ const Index = () => {
     {
       icon: Plane,
       title: "Best Price Guarantee",
-      description: "We match any competitor's price or give you 110% of the difference back"
+      description: "We match any competitor's price or give you 110%."
     },
     {
       icon: Shield,
@@ -75,7 +75,7 @@ const Index = () => {
           >
             <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/50" />
           </div>
-          <div className="relative z-10 w-full text-center mb-8 px-4">
+          <div className="relative z-10 w-full text-center mb-8 px-4 mt-4">
             <Title level={1} className="!text-white text-4xl md:text-6xl font-bold mb-4">
               Your Journey Begins Here
             </Title>

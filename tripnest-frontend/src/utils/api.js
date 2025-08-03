@@ -24,7 +24,7 @@ authAxios.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
     if (token) {
-      config.headers["x-auth-token"] = token;
+      config.headers["Authorization"] = `Bearer ${token}`; // ✅ This matches your backend
     }
     return config;
   },

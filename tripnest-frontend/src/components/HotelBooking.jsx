@@ -5,7 +5,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { searchHotel } from '../store/slices/HotelSlice';
 
 const { Option } = Select;
-const { RangePicker } = DatePicker;
 
 const HotelBooking = ({ cities = [] }) => {
   const [form] = Form.useForm();
@@ -57,11 +56,11 @@ const HotelBooking = ({ cities = [] }) => {
 
           <Col xs={24} md={12}>
             <Form.Item
-              label="Check-in & Check-out"
+              label="Check-in"
               name="dates"
               rules={[{ required: true, message: 'Please select dates' }]}
             >
-              <RangePicker className="w-full" />
+              <DatePicker className="w-full" />
             </Form.Item>
           </Col>
         </Row>

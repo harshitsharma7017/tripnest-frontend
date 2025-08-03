@@ -1,14 +1,15 @@
 import React from 'react';
-import { Card, Form, Select, DatePicker, Button, Row, Col, InputNumber, Checkbox } from 'antd';
-import { Train, ArrowLeftRight } from 'lucide-react';
+import { Card, Form, Select, DatePicker, Button, Row, Col, InputNumber, Checkbox, Empty } from 'antd';
+import { Train, ArrowLeftRight, Search } from 'lucide-react';
 import { useSelector, useDispatch } from 'react-redux';
+import dayjs from 'dayjs';
 import { searchTrains } from '../store/slices/TrainSlice';
 
 const { Option } = Select;
 
 const TrainBooking = ({ cities = [] }) => {
-    const dispatch = useDispatch();
-    const { train = [] } = useSelector((state) => state.train || {});
+  const dispatch = useDispatch();
+  const { train = [], loading = false, searchPerformed = false, error } = useSelector((state) => state.train || {});
   const [form] = Form.useForm();
 
   const classes = [
@@ -31,19 +32,132 @@ const TrainBooking = ({ cities = [] }) => {
   ];
 
   const handleSearch = (values) => {
-  const { from, to, date } = values;
+    const { from, to, date } = values;
 
-  // Format date to YYYY-MM-DD
-  const formattedDate = date.format("YYYY-MM-DD");
+    if (!from || !to || !date) return;
 
-  const searchParams = {
-    from,
-    to,
-    date: formattedDate
+    // Format date to YYYY-MM-DD
+    const formattedDate = dayjs(date).format("YYYY-MM-DD");
+
+    const searchParams = {
+      from,
+      to,
+      date: formattedDate
+    };
+
+    dispatch(searchTrains(searchParams));
   };
 
-  dispatch(searchTrains(searchParams));
-};
+  const renderTrainResults = () => {
+    // Show loading state
+    if (loading) {
+      return (
+        <div className="mt-8 text-center py-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p>Searching for trains...</p>
+        </div>
+      );
+    }
+
+    // Show results if trains are found
+    if (train.length > 0) {
+      return (
+        <div className="mt-8">
+          <h4 className="text-lg font-semibold mb-4">Available Trains ({train.length} found):</h4>
+          {train.map((trainItem, index) => (
+            <Card key={trainItem._id || index} className="mb-4">
+              <div className="flex justify-between items-start">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-2">
+                    <h5 className="text-lg font-semibold">{trainItem.trainName}</h5>
+                    <span className="text-gray-500">•</span>
+                    <span className="text-gray-600">#{trainItem.trainNumber}</span>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mb-3">
+                    <div>
+                      <p className="font-medium text-gray-700">Route</p>
+                      <p className="text-gray-600">{trainItem.sourceStation} → {trainItem.destinationStation}</p>
+                    </div>
+                    
+                    <div>
+                      <p className="font-medium text-gray-700">Class</p>
+                      <p className="text-gray-600">{trainItem.classType}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <p className="font-medium text-gray-700">Departure</p>
+                      <p className="font-semibold">{dayjs(trainItem.departureTime).format('DD MMM YYYY, hh:mm A')}</p>
+                    </div>
+                    
+                    <div>
+                      <p className="font-medium text-gray-700">Arrival</p>
+                      <p className="font-semibold">{dayjs(trainItem.arrivalTime).format('DD MMM YYYY, hh:mm A')}</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="text-right ml-4">
+                  <p className="text-2xl font-bold text-green-600">₹{trainItem.price}</p>
+                  <p className="text-sm text-gray-500 mb-3">per person</p>
+                  <Button type="primary" size="small">
+                    Book Now
+                  </Button>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+      );
+    }
+
+    // Show empty state if search was performed but no results found
+    if (searchPerformed && train.length === 0) {
+      return (
+        <div className="mt-8">
+          <Card className="text-center py-12">
+            <Empty
+              image={<Train className="h-16 w-16 text-gray-400 mx-auto mb-4" />}
+              description={
+                <div>
+                  <h4 className="text-xl font-semibold mb-3 text-gray-700">No trains found</h4>
+                  <p className="text-gray-500 mb-4 max-w-md mx-auto">
+                    We couldn't find any trains for your selected route and date. 
+                    Please try different search criteria.
+                  </p>
+                  <div className="text-sm text-gray-400 mb-6">
+                    <p className="font-medium mb-2">Suggestions:</p>
+                    <div className="space-y-1">
+                      <p>• Try selecting a different date</p>
+                      <p>• Check nearby railway stations</p>
+                      <p>• Consider alternative travel dates</p>
+                      <p>• Verify the route is available</p>
+                    </div>
+                  </div>
+                </div>
+              }
+            >
+              <Button 
+                type="primary" 
+                size="large"
+                onClick={() => {
+                  form.resetFields();
+                  // Optionally dispatch an action to reset search state
+                }}
+              >
+                Search Again
+              </Button>
+            </Empty>
+          </Card>
+        </div>
+      );
+    }
+
+    // Don't show anything if no search has been performed yet
+    return null;
+  };
 
   return (
     <Card className="w-full max-w-4xl mx-auto shadow-lg">
@@ -123,10 +237,41 @@ const TrainBooking = ({ cities = [] }) => {
               name="date"
               rules={[{ required: true, message: 'Please select date' }]}
             >
-              <DatePicker className="w-full" />
+              <DatePicker 
+                className="w-full" 
+                disabledDate={(current) => current && current < dayjs().startOf('day')}
+              />
             </Form.Item>
           </Col>
         </Row>
+
+        {/* Additional Options Row */}
+        <Row gutter={16} className="mb-4">
+          <Col xs={24} md={8}>
+            <Form.Item label="Class" name="class">
+              <Select placeholder="Select class (optional)">
+                {classes.map(cls => (
+                  <Option key={cls.value} value={cls.value}>
+                    {cls.label}
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </Col>
+          
+          <Col xs={24} md={8}>
+            <Form.Item label="Quota" name="quota">
+              <Select placeholder="Select quota (optional)">
+                {quotas.map(quota => (
+                  <Option key={quota.value} value={quota.value}>
+                    {quota.label}
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </Col>
+        </Row>
+
         {/* Search Button */}
         <Row>
           <Col span={24}>
@@ -135,28 +280,24 @@ const TrainBooking = ({ cities = [] }) => {
               htmlType="submit" 
               size="large" 
               className="w-full md:w-auto"
+              loading={loading}
             >
               Search Trains
             </Button>
           </Col>
         </Row>
       </Form>
-      {train.length > 0 && (
-  <div className="mt-6">
-    <h4 className="font-semibold mb-2">Available Trains</h4>
-    {train.map((tr, index) => (
-      <Card key={index} className="mb-4">
-        <p><strong>Train Number:</strong> {tr.trainNumber}</p>
-        <p><strong>Name:</strong> {tr.trainName}</p>
-        <p><strong>From:</strong> {tr.sourceStation} → <strong>To:</strong> {tr.destinationStation}</p>
-        <p><strong>Departure:</strong> {new Date(tr.departureTime).toLocaleString()}</p>
-        <p><strong>Arrival:</strong> {new Date(tr.arrivalTime).toLocaleString()}</p>
-        <p><strong>Class:</strong> {tr.classType}</p>
-        <p><strong>Price:</strong> ₹{tr.price}</p>
-      </Card>
-    ))}
-  </div>
-)}
+
+      {/* Error Display */}
+      {error && (
+        <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
+          <p className="font-medium">Search Error:</p>
+          <p>{error}</p>
+        </div>
+      )}
+
+      {/* Results Section */}
+      {renderTrainResults()}
     </Card>
   );
 };

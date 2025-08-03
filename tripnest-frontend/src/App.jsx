@@ -5,8 +5,10 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import ProfilePage from "./pages/ProfilePage";
 import NotFound from "./pages/NotFound";
-import Layout from "./components/Layout";
 import AttractionsPage from "./pages/AttractionsPage";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import PrivateRoute from "./components/ProtectedRoute";
 import ChatBotWidget from "./components/ChatBot";
 
 const queryClient = new QueryClient();
@@ -23,15 +25,42 @@ const App = () => (
     >
       <AntdApp>
         <BrowserRouter>
-          <Layout> {/* ✅ Layout is now inside BrowserRouter */}
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/attractions" element={<AttractionsPage />} />
-              <Route path="/profile" element={<ProfilePage />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-            <ChatBotWidget />
-          </Layout>
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+
+            {/* Protected Routes with Layout */}
+            <Route
+              path="/"
+              element={
+                <PrivateRoute>
+                  <Index />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/attractions"
+              element={
+                <PrivateRoute>
+                  <AttractionsPage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <PrivateRoute>
+                  <ProfilePage />
+                </PrivateRoute>
+              }
+            />
+
+            {/* Catch-all */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+
+          <ChatBotWidget />
         </BrowserRouter>
       </AntdApp>
     </ConfigProvider>
