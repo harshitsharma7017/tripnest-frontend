@@ -20,11 +20,13 @@ import {
   ShoppingBag,
   Filter,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import MainSidebar from "./MainSidebar";
 
 const Layout = ({ children }) => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -32,6 +34,7 @@ const Layout = ({ children }) => {
       <MainSidebar 
         collapsed={sidebarCollapsed} 
         onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} 
+        onNavigate={navigate}
       />
       
       {/* Main Content Area */}

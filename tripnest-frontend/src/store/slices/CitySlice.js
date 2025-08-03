@@ -4,7 +4,6 @@ import API from "../../utils/api";
 export const fetchAllCities = createAsyncThunk("cities/fetchAll", async (_, thunkAPI) => {
   try {
     const res = await API.getAllCities();
-    console.log("API Response:", res.data);
     return res.data; // { success, data, message }
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response?.data?.message || error.message);

@@ -70,7 +70,11 @@ const API = {
 
   getAllCities: () => authAxios.get("/cities"),
 
-  getHotelByCity: (params) => authAxios.get("/hotels", {params})
+  getHotelByCity: (params) => authAxios.get("/hotels", {params}),
+
+  getAllAttractions: () => authAxios.get("/attractions"),
+  searchAttractions: (params) => authAxios.get("/attractions/city", { params }),
+  sendChatMessage: (message) => authAxios.post("/chatbot/message", {message})
 };
 
 export default API;

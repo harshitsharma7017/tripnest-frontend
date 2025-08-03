@@ -6,6 +6,8 @@ import busReducer from './slices/BusSlice'
 import trainReducer from './slices/TrainSlice'
 import flightReducer from './slices/flightSlice'
 import hotelReducer from './slices/HotelSlice'
+import attractionsReducer from './slices/attractionsSlice'
+import chatbotReducer from './slices/chatbotSlice'
 
 const store = configureStore({
   reducer: {
@@ -14,7 +16,9 @@ const store = configureStore({
     bus: busReducer,
     train: trainReducer,
     flight: flightReducer,
-    hotel: hotelReducer
+    hotel: hotelReducer,
+    attractions: attractionsReducer,
+    chatbot: chatbotReducer
   },
 });
 

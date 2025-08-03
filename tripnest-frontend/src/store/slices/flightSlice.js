@@ -21,7 +21,6 @@ export const fetchFlightById = createAsyncThunk("flight/fetchById", async (id, t
 
 export const searchFlights = createAsyncThunk("flight/search", async (params, thunkAPI) => {
   try {
-    console.log("params", params)
     const res = await API.searchFlights(params);
     return res.data;
   } catch (error) {

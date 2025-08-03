@@ -65,61 +65,6 @@ const HotelBooking = ({ cities = [] }) => {
             </Form.Item>
           </Col>
         </Row>
-
-        <Row gutter={16}>
-          <Col xs={24} md={6}>
-            <Form.Item label="Rooms" name="rooms" initialValue={1}>
-              <InputNumber min={1} max={10} className="w-full" />
-            </Form.Item>
-          </Col>
-          <Col xs={24} md={6}>
-            <Form.Item label="Adults" name="adults" initialValue={2}>
-              <InputNumber min={1} max={20} className="w-full" />
-            </Form.Item>
-          </Col>
-          <Col xs={24} md={6}>
-            <Form.Item label="Children" name="children" initialValue={0}>
-              <InputNumber min={0} max={10} className="w-full" />
-            </Form.Item>
-          </Col>
-          <Col xs={24} md={6}>
-            <Form.Item label="Star Rating" name="starRating">
-              <Select placeholder="Any">
-                <Option value="5">5 Star</Option>
-                <Option value="4">4 Star & Above</Option>
-                <Option value="3">3 Star & Above</Option>
-                <Option value="2">2 Star & Above</Option>
-                <Option value="any">Any Rating</Option>
-              </Select>
-            </Form.Item>
-          </Col>
-        </Row>
-
-        <Row gutter={16}>
-          <Col xs={24} md={12}>
-            <Form.Item label="Price Range (per night)" name="priceRange">
-              <Select placeholder="Select budget">
-                <Option value="budget">₹0 - ₹2,000 (Budget)</Option>
-                <Option value="mid">₹2,000 - ₹5,000 (Mid-range)</Option>
-                <Option value="premium">₹5,000 - ₹10,000 (Premium)</Option>
-                <Option value="luxury">₹10,000+ (Luxury)</Option>
-              </Select>
-            </Form.Item>
-          </Col>
-          <Col xs={24} md={12}>
-            <Form.Item label="Property Type" name="propertyType">
-              <Select placeholder="Any type">
-                <Option value="hotel">Hotel</Option>
-                <Option value="resort">Resort</Option>
-                <Option value="apartment">Apartment</Option>
-                <Option value="villa">Villa</Option>
-                <Option value="homestay">Homestay</Option>
-                <Option value="hostel">Hostel</Option>
-              </Select>
-            </Form.Item>
-          </Col>
-        </Row>
-
         <Row>
           <Col span={24}>
             <Button type="primary" htmlType="submit" size="large" className="w-full md:w-auto">

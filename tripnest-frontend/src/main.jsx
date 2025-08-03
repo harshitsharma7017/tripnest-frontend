@@ -9,9 +9,7 @@ import Layout from './components/Layout.jsx'
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <Provider store={store}>
-      <Layout>
-        <App />
-      </Layout>
+      <App />
     </Provider>
   </StrictMode>,
 )
