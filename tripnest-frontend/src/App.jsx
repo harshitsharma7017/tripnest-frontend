@@ -1,31 +1,34 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import LandingPage from './pages/LandingPage';
-import ExplorePage from './pages/ExplorePage';
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
-import AppLayout from './components/AppLayout';
-import BookingsPage from './pages/BookingsPage';
-import CityDetailsPage from './components/CityDetailsPage';
+import { ConfigProvider, App as AntdApp } from "antd";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-function App() {
-  return (
-    <Router>
-      <Routes>
-        {/* Public routes without layout */}
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
+import Index from "./pages/Index";
+import ProfilePage from "./pages/ProfilePage";
+import NotFound from "./pages/NotFound";
 
-        {/* Protected/user routes with layout */}
-        <Route element={<AppLayout />}>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/explore" element={<ExplorePage />} />
-          <Route path="/bookings" element={<BookingsPage />} />
-          <Route path="/attractions/:id" element={<CityDetailsPage />} />
+const queryClient = new QueryClient();
 
-        </Route>
-      </Routes>
-    </Router>
-  );
-}
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <ConfigProvider
+      theme={{
+        token: {
+          colorPrimary: "#1677ff", // Customize theme here
+          borderRadius: 6,
+        },
+      }}
+    >
+      <AntdApp> {/* Enables message, notification, modal APIs */}
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </AntdApp>
+    </ConfigProvider>
+  </QueryClientProvider>
+);
 
 export default App;
