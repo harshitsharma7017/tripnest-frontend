@@ -26,10 +26,7 @@ const MainSidebar = ({ collapsed, onToggle }) => {
 
   const menuItems = [
     { title: "Dashboard", icon: Home },
-    { title: "Flights", icon: Plane },
-    { title: "Hotels", icon: Hotel },
-    { title: "Trains", icon: Train },
-    { title: "Bus", icon: Bus },
+    { title: "Attractions", icon: MapPin },
     { title: "My Trips", icon: Calendar },
     { title: "Wishlist", icon: Heart },
   ];
@@ -150,42 +147,6 @@ const MainSidebar = ({ collapsed, onToggle }) => {
             </div>
           </div>
         </div>
-
-        {/* Recent Bookings - Fixed at Bottom */}
-        {!collapsed && (
-          <div className="border-t border-gray-200 p-4">
-            <p className="text-xs font-medium text-gray-500 mb-3 uppercase tracking-wide">
-              Recent Bookings
-            </p>
-            <div className="space-y-2">
-              <div className="bg-blue-50 p-3 rounded-lg">
-                <div className="flex items-center space-x-2">
-                  <Plane className="h-4 w-4 text-blue-600" />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs font-medium text-gray-900">DEL → BOM</p>
-                    <p className="text-xs text-gray-500">Tomorrow, 6:30 AM</p>
-                  </div>
-                  <div className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
-                    Confirmed
-                  </div>
-                </div>
-              </div>
-              
-              <div className="bg-gray-50 p-3 rounded-lg">
-                <div className="flex items-center space-x-2">
-                  <Hotel className="h-4 w-4 text-green-600" />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs font-medium text-gray-900">Grand Hotel</p>
-                    <p className="text-xs text-gray-500">Check-in: Dec 25</p>
-                  </div>
-                  <div className="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">
-                    Pending
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
   )}
       {/* Main Content Area (for demonstration) */}

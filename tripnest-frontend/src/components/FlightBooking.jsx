@@ -1,26 +1,45 @@
 import React, { useState } from 'react';
 import { Card, Form, Input, DatePicker, Select, Button, Row, Col, Radio, InputNumber } from 'antd';
 import { Plane, ArrowLeftRight } from 'lucide-react';
+import { useDispatch, useSelector } from 'react-redux';
+import dayjs from 'dayjs'
+import { searchFlights } from '../store/slices/flightSlice';
 
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 
-const FlightBooking = () => {
+const FlightBooking = ({ cities = [] }) => {
+  const { flights } = useSelector(state => state.flight);
   const [tripType, setTripType] = useState('roundtrip');
   const [form] = Form.useForm();
 
-  const popularCities = [
-    { value: 'delhi', label: 'Delhi (DEL)' },
-    { value: 'mumbai', label: 'Mumbai (BOM)' },
-    { value: 'bangalore', label: 'Bangalore (BLR)' },
-    { value: 'kolkata', label: 'Kolkata (CCU)' },
-    { value: 'chennai', label: 'Chennai (MAA)' },
-    { value: 'hyderabad', label: 'Hyderabad (HYD)' }
-  ];
+  const dispatch = useDispatch();
 
-  const handleSearch = (values) => {
-    console.log('Flight search:', values);
+const handleSearch = (values) => {
+  const { from, to, dates } = values;
+
+  // Format query
+  const query = {
+    from,
+    to,
   };
+
+  if (dates) {
+    if (Array.isArray(dates)) {
+      // Roundtrip
+      query.startTime = dayjs(dates[0]).toISOString();
+      query.endTime = dayjs(dates[1]).toISOString();
+    } else {
+      // Oneway
+      query.startTime = dayjs(dates).toISOString();
+    }
+  }
+
+  dispatch(searchFlights(query));
+};
+
+
+  console.log("Cities in state:", cities);
 
   return (
     <Card className="w-full max-w-4xl mx-auto shadow-lg">
@@ -30,7 +49,6 @@ const FlightBooking = () => {
       </div>
       
       <Form form={form} onFinish={handleSearch} layout="vertical">
-        {/* Trip Type */}
         <Row className="mb-4">
           <Col span={24}>
             <Radio.Group 
@@ -45,7 +63,6 @@ const FlightBooking = () => {
         </Row>
 
         <Row gutter={16}>
-          {/* From */}
           <Col xs={24} md={8}>
             <Form.Item
               label="From"
@@ -53,20 +70,23 @@ const FlightBooking = () => {
               rules={[{ required: true, message: 'Please select departure city' }]}
             >
               <Select 
-                placeholder="Select departure city"
-                showSearch
-                optionFilterProp="children"
-              >
-                {popularCities.map(city => (
-                  <Option key={city.value} value={city.value}>
-                    {city.label}
-                  </Option>
-                ))}
-              </Select>
+  placeholder="Select departure city"
+  showSearch
+  optionFilterProp="children"
+>
+  {cities.length > 0 ? (
+    cities.map(city => (
+      <Option key={city._id} value={city.name}>
+        {city.name} ({city.state})
+      </Option>
+    ))
+  ) : (
+    <Option disabled>No cities available</Option>
+  )}
+</Select>
             </Form.Item>
           </Col>
 
-          {/* Swap Button */}
           <Col xs={24} md={1} className="flex items-center justify-center">
             <Button 
               type="text" 
@@ -75,7 +95,6 @@ const FlightBooking = () => {
             />
           </Col>
 
-          {/* To */}
           <Col xs={24} md={7}>
             <Form.Item
               label="To"
@@ -87,16 +106,15 @@ const FlightBooking = () => {
                 showSearch
                 optionFilterProp="children"
               >
-                {popularCities.map(city => (
-                  <Option key={city.value} value={city.value}>
-                    {city.label}
+                {cities.map(city => (
+                  <Option key={city._id} value={city.name}>
+                    {city.name} ({city.state})
                   </Option>
                 ))}
               </Select>
             </Form.Item>
           </Col>
 
-          {/* Dates */}
           <Col xs={24} md={8}>
             <Form.Item
               label="Dates"
@@ -113,34 +131,18 @@ const FlightBooking = () => {
         </Row>
 
         <Row gutter={16}>
-          {/* Passengers */}
           <Col xs={24} md={8}>
-            <Form.Item
-              label="Adults"
-              name="adults"
-              initialValue={1}
-            >
+            <Form.Item label="Adults" name="adults" initialValue={1}>
               <InputNumber min={1} max={9} className="w-full" />
             </Form.Item>
           </Col>
-
           <Col xs={24} md={8}>
-            <Form.Item
-              label="Children"
-              name="children"
-              initialValue={0}
-            >
+            <Form.Item label="Children" name="children" initialValue={0}>
               <InputNumber min={0} max={9} className="w-full" />
             </Form.Item>
           </Col>
-
-          {/* Class */}
           <Col xs={24} md={8}>
-            <Form.Item
-              label="Class"
-              name="class"
-              initialValue="economy"
-            >
+            <Form.Item label="Class" name="class" initialValue="economy">
               <Select>
                 <Option value="economy">Economy</Option>
                 <Option value="premium-economy">Premium Economy</Option>
@@ -151,7 +153,6 @@ const FlightBooking = () => {
           </Col>
         </Row>
 
-        {/* Search Button */}
         <Row>
           <Col span={24}>
             <Button 
@@ -165,6 +166,29 @@ const FlightBooking = () => {
           </Col>
         </Row>
       </Form>
+      {flights?.length > 0 && (
+  <div className="mt-8 grid gap-4">
+    {flights.map((flight) => (
+      <Card key={flight._id} className="border shadow">
+        <Row justify="space-between" align="middle">
+          <Col>
+            <h4 className="text-lg font-semibold">{flight.airline} - {flight.flightNumber}</h4>
+            <p>{flight.sourceAirport} → {flight.destinationAirport}</p>
+            <p>Departure: {dayjs(flight.departureTime).format('YYYY-MM-DD HH:mm')}</p>
+            <p>Arrival: {dayjs(flight.arrivalTime).format('YYYY-MM-DD HH:mm')}</p>
+            <p>Duration: {flight.duration}</p>
+          </Col>
+          <Col>
+            <p className="text-xl font-bold text-green-600">₹{flight.price}</p>
+            <p>Class: {flight.classType}</p>
+            <p>Seats: {flight.availableSeats}</p>
+            <Button type="primary">Book</Button>
+          </Col>
+        </Row>
+      </Card>
+    ))}
+  </div>
+)}
     </Card>
   );
 };

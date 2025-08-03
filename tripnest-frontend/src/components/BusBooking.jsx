@@ -1,10 +1,15 @@
 import React from 'react';
 import { Card, Form, Select, DatePicker, Button, Row, Col, InputNumber } from 'antd';
 import { Bus, ArrowLeftRight } from 'lucide-react';
+import { useSelector, useDispatch } from 'react-redux';
+import dayjs from 'dayjs';
+import { searchBuses } from '../store/slices/BusSlice';
 
 const { Option } = Select;
 
-const BusBooking = () => {
+const BusBooking = ({ cities = [] }) => {
+    const { bus = [] } = useSelector((state) => state.bus || {});
+    const dispatch = useDispatch();
   const [form] = Form.useForm();
 
   const popularRoutes = [
@@ -16,17 +21,15 @@ const BusBooking = () => {
     { from: 'Kolkata', to: 'Siliguri', value: 'kolkata-siliguri' }
   ];
 
-  const cities = [
-    'Delhi', 'Mumbai', 'Bangalore', 'Chennai', 'Kolkata', 'Hyderabad',
-    'Pune', 'Jaipur', 'Ahmedabad', 'Surat', 'Lucknow', 'Kanpur',
-    'Nagpur', 'Indore', 'Thane', 'Bhopal', 'Visakhapatnam', 'Patna',
-    'Vadodara', 'Ghaziabad', 'Ludhiana', 'Agra', 'Nashik', 'Faridabad',
-    'Meerut', 'Rajkot', 'Kalyan-Dombivli', 'Vasai-Virar', 'Varanasi', 'Srinagar'
-  ];
-
   const handleSearch = (values) => {
-    console.log('Bus search:', values);
-  };
+    const { from, to, date } = values;
+
+    if (!from || !to || !date) return;
+
+    const formattedDate = dayjs(date).format('YYYY-MM-DD');
+
+    dispatch(searchBuses({ from, to, date: formattedDate }));
+    };
 
   return (
     <Card className="w-full max-w-4xl mx-auto shadow-lg">
@@ -50,8 +53,8 @@ const BusBooking = () => {
                 optionFilterProp="children"
               >
                 {cities.map(city => (
-                  <Option key={city} value={city.toLowerCase()}>
-                    {city}
+                  <Option key={city._id} value={city.name}>
+                    {city.name}
                   </Option>
                 ))}
               </Select>
@@ -80,8 +83,8 @@ const BusBooking = () => {
                 optionFilterProp="children"
               >
                 {cities.map(city => (
-                  <Option key={city} value={city.toLowerCase()}>
-                    {city}
+                  <Option key={city._id} value={city.name}>
+                    {city.name}
                   </Option>
                 ))}
               </Select>
@@ -215,6 +218,20 @@ const BusBooking = () => {
           </Col>
         </Row>
       </Form>
+      {bus.length > 0 && (
+  <div className="mt-8">
+    <h4 className="text-lg font-semibold mb-4">Available Buses:</h4>
+    {bus.map((bus) => (
+      <Card key={bus._id} className="mb-4">
+        <p><strong>{bus.operatorName}</strong> - {bus.busType}</p>
+        <p>{bus.sourceCity} → {bus.destinationCity}</p>
+        <p>Departure: {dayjs(bus.departureTime).format('DD MMM YYYY, hh:mm A')}</p>
+        <p>Price: ₹{bus.price}</p>
+        <p>Seats Available: {bus.availableSeats}/{bus.totalSeats}</p>
+      </Card>
+    ))}
+  </div>
+)}
     </Card>
   );
 };

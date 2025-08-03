@@ -46,14 +46,31 @@ authAxios.interceptors.response.use(
 
 // Exported API methods
 const API = {
-  // Public
+  // 🔓 Public
   login: (data) => publicAxios.post("/auth/login", data),
   register: (data) => publicAxios.post("/auth/register", data),
 
-  // Protected (use these only after login)
+  // 🔐 Protected (authenticated requests)
   getProfile: () => authAxios.get("/user/me"),
   bookTrip: (tripId, data) => authAxios.post(`/trips/${tripId}/book`, data),
   getBookings: () => authAxios.get("/bookings"),
+
+  // ✈️ Flight APIs
+  getAllFlights: () => authAxios.get("/flight"),
+  getFlightById: (id) => authAxios.get(`/flight/${id}`),
+  searchFlights: (params) => authAxios.get("/flight/search", { params }),
+
+  getAllBuses: () => authAxios.get("/bus"),
+  getBusById: (id) => authAxios.get(`/bus/${id}`),
+  searchBuses: (params) => authAxios.get("/bus/search", { params }),
+
+  getAllTrains: () => authAxios.get("/train"),
+  getTrainById: (id) => authAxios.get(`/train/${id}`),
+  searchTrains: (params) => authAxios.get("/train/search", { params }),
+
+  getAllCities: () => authAxios.get("/cities"),
+
+  getHotelByCity: (params) => authAxios.get("/hotels", {params})
 };
 
 export default API;

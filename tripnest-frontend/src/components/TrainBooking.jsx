@@ -1,24 +1,15 @@
 import React from 'react';
 import { Card, Form, Select, DatePicker, Button, Row, Col, InputNumber, Checkbox } from 'antd';
 import { Train, ArrowLeftRight } from 'lucide-react';
+import { useSelector, useDispatch } from 'react-redux';
+import { searchTrains } from '../store/slices/TrainSlice';
 
 const { Option } = Select;
 
-const TrainBooking = () => {
+const TrainBooking = ({ cities = [] }) => {
+    const dispatch = useDispatch();
+    const { train = [] } = useSelector((state) => state.train || {});
   const [form] = Form.useForm();
-
-  const majorStations = [
-    { code: 'NDLS', name: 'New Delhi', city: 'Delhi' },
-    { code: 'CSMT', name: 'Mumbai CST', city: 'Mumbai' },
-    { code: 'SBC', name: 'Bangalore City', city: 'Bangalore' },
-    { code: 'MAS', name: 'Chennai Central', city: 'Chennai' },
-    { code: 'HWH', name: 'Howrah Junction', city: 'Kolkata' },
-    { code: 'SC', name: 'Secunderabad', city: 'Hyderabad' },
-    { code: 'PUNE', name: 'Pune Junction', city: 'Pune' },
-    { code: 'JP', name: 'Jaipur Junction', city: 'Jaipur' },
-    { code: 'ADI', name: 'Ahmedabad', city: 'Ahmedabad' },
-    { code: 'LKO', name: 'Lucknow', city: 'Lucknow' }
-  ];
 
   const classes = [
     { value: '1A', label: 'First AC (1A)' },
@@ -40,8 +31,19 @@ const TrainBooking = () => {
   ];
 
   const handleSearch = (values) => {
-    console.log('Train search:', values);
+  const { from, to, date } = values;
+
+  // Format date to YYYY-MM-DD
+  const formattedDate = date.format("YYYY-MM-DD");
+
+  const searchParams = {
+    from,
+    to,
+    date: formattedDate
   };
+
+  dispatch(searchTrains(searchParams));
+};
 
   return (
     <Card className="w-full max-w-4xl mx-auto shadow-lg">
@@ -67,9 +69,9 @@ const TrainBooking = () => {
                   option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                 }
               >
-                {majorStations.map(station => (
-                  <Option key={station.code} value={station.code}>
-                    {station.name} ({station.code}) - {station.city}
+                {cities.map(city => (
+                  <Option key={city._id} value={city.name}>
+                    {city.name} ({city.state})
                   </Option>
                 ))}
               </Select>
@@ -105,9 +107,9 @@ const TrainBooking = () => {
                   option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                 }
               >
-                {majorStations.map(station => (
-                  <Option key={station.code} value={station.code}>
-                    {station.name} ({station.code}) - {station.city}
+                {cities.map(city => (
+                  <Option key={city._id} value={city.name}>
+                    {city.name} ({city.state})
                   </Option>
                 ))}
               </Select>
@@ -241,6 +243,22 @@ const TrainBooking = () => {
           </Col>
         </Row>
       </Form>
+      {train.length > 0 && (
+  <div className="mt-6">
+    <h4 className="font-semibold mb-2">Available Trains</h4>
+    {train.map((tr, index) => (
+      <Card key={index} className="mb-4">
+        <p><strong>Train Number:</strong> {tr.trainNumber}</p>
+        <p><strong>Name:</strong> {tr.trainName}</p>
+        <p><strong>From:</strong> {tr.sourceStation} → <strong>To:</strong> {tr.destinationStation}</p>
+        <p><strong>Departure:</strong> {new Date(tr.departureTime).toLocaleString()}</p>
+        <p><strong>Arrival:</strong> {new Date(tr.arrivalTime).toLocaleString()}</p>
+        <p><strong>Class:</strong> {tr.classType}</p>
+        <p><strong>Price:</strong> ₹{tr.price}</p>
+      </Card>
+    ))}
+  </div>
+)}
     </Card>
   );
 };

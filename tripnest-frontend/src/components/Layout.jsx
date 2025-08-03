@@ -22,7 +22,6 @@ import {
 } from "lucide-react";
 import MainSidebar from "./MainSidebar";
 
-// Updated Layout Component
 const Layout = ({ children }) => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
@@ -39,7 +38,7 @@ const Layout = ({ children }) => {
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
         <header className="bg-white border-b border-gray-200 px-6 py-4">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-wrap items-center justify-between gap-4">
             {/* Logo */}
             <div className="flex items-center space-x-3">
               <div className="bg-gradient-to-br from-blue-600 to-blue-400 text-white p-2 rounded-lg">
@@ -51,17 +50,14 @@ const Layout = ({ children }) => {
               </div>
             </div>
 
-            {/* Navigation */}
-            <nav className="hidden md:flex items-center space-x-8">
-              {["Flights", "Hotels", "Trains", "Bus", "Holidays"].map((item) => (
-                <button
-                  key={item}
-                  className="text-gray-700 hover:text-blue-600 transition-colors font-medium"
-                >
-                  {item}
-                </button>
-              ))}
-            </nav>
+            {/* Search Bar */}
+            <div className="flex-1 flex justify-center">
+              <input
+                type="text"
+                placeholder="Search destinations, trips, etc."
+                className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
 
             {/* Actions */}
             <div className="flex items-center space-x-3">

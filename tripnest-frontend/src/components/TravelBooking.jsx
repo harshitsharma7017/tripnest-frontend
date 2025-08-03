@@ -1,105 +1,97 @@
-import React, { useState } from 'react';
-import { Tabs } from 'antd';
-import { 
-  Plane, 
-  Building2, 
-  Package, 
-  Bus, 
-  Train 
-} from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Plane, Building2, Package, Bus, Train } from 'lucide-react';
+
 import FlightBooking from './FlightBooking';
 import HotelBooking from './HotelBooking'; 
 import HolidayPackages from './HolidayPackages';
 import BusBooking from './BusBooking';
 import TrainBooking from './TrainBooking';
+import { fetchAllCities } from '../store/slices/CitySlice';
 
 const TravelBooking = () => {
+  const dispatch = useDispatch();
+  const cities = useSelector((state) => state.city.city);
   const [activeTab, setActiveTab] = useState('flights');
 
-  const tabItems = [
+  useEffect(() => {
+    dispatch(fetchAllCities());
+  }, [dispatch]);
+
+  const tabs = [
     {
       key: 'flights',
-      label: (
-        <div className="flex items-center gap-2 px-2">
-          <Plane className="h-4 w-4" />
-          <span>Flights</span>
-        </div>
-      ),
-      children: <FlightBooking />
+      label: 'Flights',
+      icon: <Plane className="h-5 w-5" />,
+      component: <FlightBooking cities={cities} />
     },
     {
       key: 'hotels',
-      label: (
-        <div className="flex items-center gap-2 px-2">
-          <Building2 className="h-4 w-4" />
-          <span>Hotels</span>
-        </div>
-      ),
-      children: <HotelBooking />
+      label: 'Hotels',
+      icon: <Building2 className="h-5 w-5" />,
+      component: <HotelBooking cities={cities} />
     },
     {
       key: 'packages',
-      label: (
-        <div className="flex items-center gap-2 px-2">
-          <Package className="h-4 w-4" />
-          <span>Packages</span>
-        </div>
-      ),
-      children: <HolidayPackages />
+      label: 'Packages',
+      icon: <Package className="h-5 w-5" />,
+      component: <HolidayPackages cities={cities} />
     },
     {
       key: 'buses',
-      label: (
-        <div className="flex items-center gap-2 px-2">
-          <Bus className="h-4 w-4" />
-          <span>Buses</span>
-        </div>
-      ),
-      children: <BusBooking />
+      label: 'Buses',
+      icon: <Bus className="h-5 w-5" />,
+      component: <BusBooking cities={cities} />
     },
     {
       key: 'trains',
-      label: (
-        <div className="flex items-center gap-2 px-2">
-          <Train className="h-4 w-4" />
-          <span>Trains</span>
-        </div>
-      ),
-      children: <TrainBooking />
+      label: 'Trains',
+      icon: <Train className="h-5 w-5" />,
+      component: <TrainBooking cities={cities} />
     }
   ];
 
+  const renderActiveContent = () => {
+    const activeTabData = tabs.find(tab => tab.key === activeTab);
+    return activeTabData ? activeTabData.component : null;
+  };
+
   return (
-    <div className="w-full">
-      <Tabs
-        activeKey={activeTab}
-        onChange={setActiveTab}
-        items={tabItems}
-        size="large"
-        className="travel-booking-tabs"
-        tabBarStyle={{
-          backgroundColor: 'rgba(255, 255, 255, 0.95)',
-          borderRadius: '12px 12px 0 0',
-          margin: 0,
-          padding: '0 16px',
-          backdropFilter: 'blur(10px)'
-        }}
-      />
+    <div className="w-full max-w-7xl mx-auto px-4">
+      {/* Header Tabs */}
+      <div className="mb-6">
+    <div className="flex items-center bg-white rounded-xl shadow-sm p-2 border border-gray-100">
+      {tabs.map((tab) => (
+        <button
+          key={tab.key}
+          onClick={() => setActiveTab(tab.key)}
+          className={`
+            flex-1 flex items-center justify-center gap-3 px-6 py-3 rounded-lg font-medium transition-all duration-200
+            ${activeTab === tab.key
+              ? 'bg-blue-600 text-white shadow-md transform scale-105'
+              : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
+            }
+          `}
+        >
+          {tab.icon}
+          <span className="hidden sm:inline">{tab.label}</span>
+        </button>
+      ))}
+    </div>
+  </div>
+
+      {/* Content Card */}
+      <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+        <div className="p-8">
+          {renderActiveContent()}
+        </div>
+      </div>
       
       <style jsx>{`
-        .travel-booking-tabs .ant-tabs-tab {
-          padding: 12px 16px !important;
-          margin-right: 8px !important;
-          border-radius: 8px 8px 0 0 !important;
-        }
-        
-        .travel-booking-tabs .ant-tabs-tab-active {
-          background-color: white !important;
-          border-bottom: 2px solid #1890ff !important;
-        }
-        
-        .travel-booking-tabs .ant-tabs-content-holder {
-          background: transparent;
+        @media (max-width: 640px) {
+          .flex.items-center.space-x-1 {
+            justify-content: space-between;
+          }
         }
       `}</style>
     </div>

@@ -1,25 +1,29 @@
-import React from 'react';
-import { Card, Form, Input, DatePicker, Select, Button, Row, Col, InputNumber } from 'antd';
+import React, { useEffect } from 'react';
+import { Card, Form, DatePicker, Select, Button, Row, Col, InputNumber, Spin } from 'antd';
 import { Building2, MapPin } from 'lucide-react';
+import { useDispatch, useSelector } from 'react-redux';
+import { searchHotel } from '../store/slices/HotelSlice';
 
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 
-const HotelBooking = () => {
+const HotelBooking = ({ cities = [] }) => {
   const [form] = Form.useForm();
+  const dispatch = useDispatch();
 
-  const popularDestinations = [
-    { value: 'goa', label: 'Goa' },
-    { value: 'kerala', label: 'Kerala' },
-    { value: 'rajasthan', label: 'Rajasthan' },
-    { value: 'himachal', label: 'Himachal Pradesh' },
-    { value: 'uttarakhand', label: 'Uttarakhand' },
-    { value: 'kashmir', label: 'Kashmir' }
-  ];
+  const { hotels, loading } = useSelector((state) => state.hotel);
 
   const handleSearch = (values) => {
-    console.log('Hotel search:', values);
-  };
+    const selectedCity = cities.find((city) => city.name === values.destination);
+
+    if (selectedCity?._id) {
+        const payload = {
+        cityId: selectedCity._id,
+        };
+        dispatch(searchHotel(payload));
+    }
+    };
+
 
   return (
     <Card className="w-full max-w-4xl mx-auto shadow-lg">
@@ -30,7 +34,6 @@ const HotelBooking = () => {
       
       <Form form={form} onFinish={handleSearch} layout="vertical">
         <Row gutter={16}>
-          {/* Destination */}
           <Col xs={24} md={12}>
             <Form.Item
               label="Destination"
@@ -38,21 +41,20 @@ const HotelBooking = () => {
               rules={[{ required: true, message: 'Please enter destination' }]}
             >
               <Select
-                placeholder="Enter city or hotel name"
+                placeholder="Select city"
                 showSearch
                 optionFilterProp="children"
                 suffixIcon={<MapPin className="h-4 w-4" />}
               >
-                {popularDestinations.map(dest => (
-                  <Option key={dest.value} value={dest.value}>
-                    {dest.label}
+                {cities.map(city => (
+                  <Option key={city._id} value={city.name}>
+                    {city.name} ({city.state})
                   </Option>
                 ))}
               </Select>
             </Form.Item>
           </Col>
 
-          {/* Check-in & Check-out */}
           <Col xs={24} md={12}>
             <Form.Item
               label="Check-in & Check-out"
@@ -65,45 +67,23 @@ const HotelBooking = () => {
         </Row>
 
         <Row gutter={16}>
-          {/* Rooms */}
           <Col xs={24} md={6}>
-            <Form.Item
-              label="Rooms"
-              name="rooms"
-              initialValue={1}
-            >
+            <Form.Item label="Rooms" name="rooms" initialValue={1}>
               <InputNumber min={1} max={10} className="w-full" />
             </Form.Item>
           </Col>
-
-          {/* Adults */}
           <Col xs={24} md={6}>
-            <Form.Item
-              label="Adults"
-              name="adults"
-              initialValue={2}
-            >
+            <Form.Item label="Adults" name="adults" initialValue={2}>
               <InputNumber min={1} max={20} className="w-full" />
             </Form.Item>
           </Col>
-
-          {/* Children */}
           <Col xs={24} md={6}>
-            <Form.Item
-              label="Children"
-              name="children"
-              initialValue={0}
-            >
+            <Form.Item label="Children" name="children" initialValue={0}>
               <InputNumber min={0} max={10} className="w-full" />
             </Form.Item>
           </Col>
-
-          {/* Star Rating */}
           <Col xs={24} md={6}>
-            <Form.Item
-              label="Star Rating"
-              name="starRating"
-            >
+            <Form.Item label="Star Rating" name="starRating">
               <Select placeholder="Any">
                 <Option value="5">5 Star</Option>
                 <Option value="4">4 Star & Above</Option>
@@ -115,13 +95,9 @@ const HotelBooking = () => {
           </Col>
         </Row>
 
-        {/* Price Range */}
         <Row gutter={16}>
           <Col xs={24} md={12}>
-            <Form.Item
-              label="Price Range (per night)"
-              name="priceRange"
-            >
+            <Form.Item label="Price Range (per night)" name="priceRange">
               <Select placeholder="Select budget">
                 <Option value="budget">₹0 - ₹2,000 (Budget)</Option>
                 <Option value="mid">₹2,000 - ₹5,000 (Mid-range)</Option>
@@ -130,13 +106,8 @@ const HotelBooking = () => {
               </Select>
             </Form.Item>
           </Col>
-
-          {/* Hotel Type */}
           <Col xs={24} md={12}>
-            <Form.Item
-              label="Property Type"
-              name="propertyType"
-            >
+            <Form.Item label="Property Type" name="propertyType">
               <Select placeholder="Any type">
                 <Option value="hotel">Hotel</Option>
                 <Option value="resort">Resort</Option>
@@ -149,20 +120,57 @@ const HotelBooking = () => {
           </Col>
         </Row>
 
-        {/* Search Button */}
         <Row>
           <Col span={24}>
-            <Button 
-              type="primary" 
-              htmlType="submit" 
-              size="large" 
-              className="w-full md:w-auto"
-            >
+            <Button type="primary" htmlType="submit" size="large" className="w-full md:w-auto">
               Search Hotels
             </Button>
           </Col>
         </Row>
       </Form>
+
+      {/* Results */}
+      <div className="mt-8">
+  {loading ? (
+    <Spin />
+  ) : hotels.length > 0 ? (
+    hotels.map(hotel => (
+      <Card key={hotel._id} className="mb-6">
+        <Row gutter={16}>
+          <Col xs={24} md={8}>
+            <img
+              src={hotel.images?.[0]}
+              alt={hotel.name}
+              className="w-full h-48 object-cover rounded"
+            />
+          </Col>
+          <Col xs={24} md={16}>
+            <h4 className="text-xl font-bold mb-2">{hotel.name}</h4>
+            <p className="text-gray-600 mb-1">
+              {hotel.city?.name}, {hotel.city?.state}
+            </p>
+            <p className="text-gray-700 mb-2">{hotel.description}</p>
+            <p className="text-sm text-gray-500 mb-1">Rating: ⭐ {hotel.rating}</p>
+            <p className="text-sm text-gray-500 mb-1">Price: ₹{hotel.pricePerNight.toLocaleString()} / night</p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {hotel.amenities.map((amenity, index) => (
+                <span
+                  key={index}
+                  className="bg-gray-100 text-sm px-2 py-1 rounded-full border"
+                >
+                  {amenity}
+                </span>
+              ))}
+            </div>
+          </Col>
+        </Row>
+      </Card>
+    ))
+  ) : (
+    <p className="text-gray-500">No hotels found.</p>
+  )}
+</div>
+
     </Card>
   );
 };
